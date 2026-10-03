@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "exercise",
+  "equipment",
+  "set_number",
+  "weight_kg",
+  "reps",
+  "difficulty"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "exercise",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Exercise",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "equipment",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Equipment"
+  },
+  {
+   "columns": 1,
+   "description": "Set index within the exercise.",
+   "fieldname": "set_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Set"
+  },
+  {
+   "columns": 2,
+   "fieldname": "weight_kg",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weight (kg)",
+   "precision": "2"
+  },
+  {
+   "columns": 1,
+   "fieldname": "reps",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Reps"
+  },
+  {
+   "columns": 1,
+   "description": "RPE / intensity value from the source payload.",
+   "fieldname": "difficulty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Difficulty",
+   "precision": "1"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Evolve",
+ "name": "Workout Sets",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
