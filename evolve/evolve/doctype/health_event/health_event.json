@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "HE-.YYYY.-.#####",
+ "creation": "2026-09-29 08:21:24.370033",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "what_happened",
+  "when_started",
+  "until_when",
+  "duration_hours",
+  "severity",
+  "triggers",
+  "meds_taken",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "when_started",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "When Started",
+   "reqd": 1
+  },
+  {
+   "fieldname": "until_when",
+   "fieldtype": "Datetime",
+   "label": "Until when"
+  },
+  {
+   "description": "1 (mild) to 10 (worst).",
+   "fieldname": "severity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Severity"
+  },
+  {
+   "fieldname": "triggers",
+   "fieldtype": "Small Text",
+   "label": "Triggers"
+  },
+  {
+   "fieldname": "meds_taken",
+   "fieldtype": "Small Text",
+   "label": "Meds Taken"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "what_happened",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Event Type",
+   "options": "migraine\nheadache\nsinusitis\nsore throat\nstomach ache\nback pain\nacid reflux",
+   "reqd": 1
+  },
+  {
+   "description": "Derived from When Started and Until When.",
+   "fieldname": "duration_hours",
+   "fieldtype": "Float",
+   "label": "Duration (Hours)",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-02 13:28:29.021844",
+ "modified_by": "Administrator",
+ "module": "Evolve",
+ "name": "Health Event",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "when_started",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "what_happened"
+}

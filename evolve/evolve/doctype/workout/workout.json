@@ -1,0 +1,109 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "WO-.YYYY.-.#####",
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "workout_date",
+  "routine_name",
+  "duration",
+  "sets_section",
+  "sets",
+  "cardio_section",
+  "cardio",
+  "notes_section",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "Now",
+   "description": "Session start.",
+   "fieldname": "workout_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Workout Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "routine_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Routine Name"
+  },
+  {
+   "description": "Total session length, if the source provides one.",
+   "fieldname": "duration",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "in_list_view": 1,
+   "label": "Duration"
+  },
+  {
+   "fieldname": "sets_section",
+   "fieldtype": "Section Break",
+   "label": "Sets"
+  },
+  {
+   "fieldname": "sets",
+   "fieldtype": "Table",
+   "label": "Sets",
+   "options": "Workout Sets"
+  },
+  {
+   "fieldname": "cardio_section",
+   "fieldtype": "Section Break",
+   "label": "Cardio"
+  },
+  {
+   "fieldname": "cardio",
+   "fieldtype": "Table",
+   "label": "Cardio",
+   "options": "Workout Cardio"
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Evolve",
+ "name": "Workout",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "search_fields": "workout_date,routine_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "workout_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "routine_name"
+}

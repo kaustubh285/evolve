@@ -1,0 +1,189 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "CHK-.YYYY.-.#####",
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "sleep_section",
+  "sleep_start",
+  "sleep_end",
+  "sleep_cb",
+  "total_hours",
+  "quality",
+  "meals_section",
+  "meals",
+  "protein_cb",
+  "protein_at_breakfast",
+  "protein_at_lunch",
+  "protein_at_dinner",
+  "movement_section",
+  "steps",
+  "records_section",
+  "workout",
+  "records_cb",
+  "health_events",
+  "notes_section",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "description": "One check-in per day.",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sleep_section",
+   "fieldtype": "Section Break",
+   "label": "Sleep"
+  },
+  {
+   "description": "When sleep began. Source of truth.",
+   "fieldname": "sleep_start",
+   "fieldtype": "Datetime",
+   "label": "Sleep Start"
+  },
+  {
+   "description": "When you woke. Source of truth.",
+   "fieldname": "sleep_end",
+   "fieldtype": "Datetime",
+   "label": "Sleep End"
+  },
+  {
+   "fieldname": "sleep_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Derived from Sleep Start and Sleep End.",
+   "fieldname": "total_hours",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Hours",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quality",
+   "fieldtype": "Rating",
+   "in_list_view": 1,
+   "label": "Quality",
+   "options": "5"
+  },
+  {
+   "fieldname": "meals_section",
+   "fieldtype": "Section Break",
+   "label": "Meals"
+  },
+  {
+   "description": "All of today's meals, as free text. Append through the day.",
+   "fieldname": "meals",
+   "fieldtype": "Text",
+   "label": "Meals"
+  },
+  {
+   "fieldname": "records_section",
+   "fieldtype": "Section Break",
+   "label": "Today's Records"
+  },
+  {
+   "fieldname": "workout",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Workout",
+   "options": "Workout"
+  },
+  {
+   "fieldname": "records_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "description": "Anything the fields above don't cover.",
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "protein_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "protein_at_breakfast",
+   "fieldtype": "Check",
+   "label": "Protein at Breakfast"
+  },
+  {
+   "default": "0",
+   "fieldname": "protein_at_lunch",
+   "fieldtype": "Check",
+   "label": "Protein at Lunch"
+  },
+  {
+   "default": "0",
+   "fieldname": "protein_at_dinner",
+   "fieldtype": "Check",
+   "label": "Protein at Dinner"
+  },
+  {
+   "fieldname": "movement_section",
+   "fieldtype": "Section Break",
+   "label": "Movement"
+  },
+  {
+   "description": "Step count for the day.",
+   "fieldname": "steps",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Steps",
+   "non_negative": 1
+  },
+  {
+   "description": "Today's health events. One Health Event per condition.",
+   "fieldname": "health_events",
+   "fieldtype": "Table MultiSelect",
+   "label": "Health Events",
+   "options": "Daily Checkin Health Event"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Evolve",
+ "name": "Daily Checkin",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "date",
+ "sort_order": "DESC",
+ "states": []
+}
