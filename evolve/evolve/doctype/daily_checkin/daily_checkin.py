@@ -39,6 +39,23 @@ class DailyCheckin(Document):
 	def validate(self):
 		self.ensure_one_per_day()
 		self.set_total_hours()
+		self.attach_days_workout()
+
+	def attach_days_workout(self):
+		"""Pick up a workout already recorded for this date.
+
+		The other direction is handled by `Workout.after_insert`, so the link happens
+		whichever record is created first. Never overwrites an existing choice.
+		"""
+		if self.workout or not self.date:
+			return
+
+		self.workout = frappe.db.get_value(
+			"Workout",
+			{"workout_date": ["between", [f"{self.date} 00:00:00", f"{self.date} 23:59:59"]]},
+			"name",
+			order_by="workout_date asc",
+		)
 
 	def ensure_one_per_day(self):
 		"""Enforce one check-in per calendar day.
