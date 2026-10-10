@@ -4,7 +4,8 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt, formatdate, get_datetime, get_link_to_form
+from frappe.model.naming import make_autoname
+from frappe.utils import flt, formatdate, get_datetime, get_link_to_form, getdate
 
 
 class DailyCheckin(Document):
@@ -35,6 +36,21 @@ class DailyCheckin(Document):
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Daily Checkin"
+
+	def autoname(self):
+		"""Name the record after the day it describes: `CHK-DD-MM-YY-00001`.
+
+		Built from the `date` field rather than a naming series, so a check-in
+		backfilled for an earlier day still carries that day's date. strftime is used
+		instead of formatdate because the name must not depend on the user's display
+		date format. With one check-in per day enforced, the counter is always 00001;
+		it is kept for a fixed-width name.
+		"""
+		if not self.date:
+			# mandatory validation rejects this before anything is written
+			return
+
+		self.name = make_autoname(f"CHK-{getdate(self.date).strftime('%d-%m-%y')}-.#####")
 
 	def validate(self):
 		self.ensure_one_per_day()

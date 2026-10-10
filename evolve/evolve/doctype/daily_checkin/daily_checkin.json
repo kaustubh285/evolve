@@ -2,7 +2,6 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "CHK-.YYYY.-.#####",
  "creation": "2026-10-03 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -165,7 +164,7 @@
  "modified_by": "Administrator",
  "module": "Evolve",
  "name": "Daily Checkin",
- "naming_rule": "Expression",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {
