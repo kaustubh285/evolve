@@ -4,7 +4,8 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt, formatdate, get_datetime, get_link_to_form
+from frappe.model.naming import make_autoname
+from frappe.utils import flt, formatdate, get_datetime, get_link_to_form, getdate
 
 
 class DailyCheckin(Document):
@@ -36,9 +37,41 @@ class DailyCheckin(Document):
 
 	_DOCTYPE_NAME = "Daily Checkin"
 
+	def autoname(self):
+		"""Name the record after the day it describes: `CHK-DD-MM-YY-00001`.
+
+		Built from the `date` field rather than a naming series, so a check-in
+		backfilled for an earlier day still carries that day's date. strftime is used
+		instead of formatdate because the name must not depend on the user's display
+		date format. With one check-in per day enforced, the counter is always 00001;
+		it is kept for a fixed-width name.
+		"""
+		if not self.date:
+			# mandatory validation rejects this before anything is written
+			return
+
+		self.name = make_autoname(f"CHK-{getdate(self.date).strftime('%d-%m-%y')}-.#####")
+
 	def validate(self):
 		self.ensure_one_per_day()
 		self.set_total_hours()
+		self.attach_days_workout()
+
+	def attach_days_workout(self):
+		"""Pick up a workout already recorded for this date.
+
+		The other direction is handled by `Workout.after_insert`, so the link happens
+		whichever record is created first. Never overwrites an existing choice.
+		"""
+		if self.workout or not self.date:
+			return
+
+		self.workout = frappe.db.get_value(
+			"Workout",
+			{"workout_date": ["between", [f"{self.date} 00:00:00", f"{self.date} 23:59:59"]]},
+			"name",
+			order_by="workout_date asc",
+		)
 
 	def ensure_one_per_day(self):
 		"""Enforce one check-in per calendar day.

@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Workout", {
 	refresh(frm) {
-		frm.add_custom_button(__("Import from JSON"), () => confirm_then_import(frm));
+		frm.add_custom_button(__("Import Workout"), () => confirm_then_import(frm));
 	},
 });
 
@@ -23,17 +23,17 @@ function confirm_then_import(frm) {
 
 function show_import_dialog(frm) {
 	const dialog = new frappe.ui.Dialog({
-		title: __("Import Workout from JSON"),
+		title: __("Import Workout"),
 		size: "large",
 		fields: [
 			{
 				fieldname: "payload",
 				fieldtype: "Code",
-				options: "JSON",
+				options: "Text",
 				label: __("Payload"),
 				reqd: 1,
 				description: __(
-					"Sets and cardio are filled in for review. Nothing is saved until you save the form."
+					"Paste the app's share text or a JSON export — either is accepted. Sets and cardio are filled in for review. Nothing is saved until you save the form."
 				),
 			},
 		],
