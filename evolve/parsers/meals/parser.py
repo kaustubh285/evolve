@@ -35,6 +35,9 @@ from frappe import _
 SARVAM_URL = "https://api.sarvam.ai/v1/chat/completions"
 SARVAM_MODEL = "sarvam-105b"
 TIMEOUT_SECONDS = 60
+#: Longer `meals` text is refused rather than sent: a real day's log is a few hundred
+#: characters, and a failing check-in is retried every night.
+MAX_TEXT_LENGTH = 5000
 
 SYSTEM_PROMPT = """\
 You turn one day's free-text food log into meal entries.
@@ -259,6 +262,8 @@ def parse_meals(text: str, date: str) -> list[dict]:
 	text = (text or "").strip()
 	if not text:
 		_fail("There is no meals text to parse.")
+	if len(text) > MAX_TEXT_LENGTH:
+		_fail("The meals text is {0} characters long; the limit is {1}.", len(text), MAX_TEXT_LENGTH)
 
 	slots = meal_slots()
 	return _rows_from_content(_call_sarvam(text, str(date), slots), slots)

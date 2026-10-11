@@ -182,6 +182,10 @@ use_json_request_body = True
 # ---------------
 # Hook on document methods and events
 
+# B1-T3 can never be logged into, see evolve.bot
+on_login = "evolve.bot.block_login"
+auth_hooks = ["evolve.bot.block_requests"]
+
 doc_events = {
 	"Comment": {
 		# @B1-T3 in a comment asks it to do something, see evolve.bot.on_comment

@@ -14,14 +14,19 @@ apart from yours. Jobs that save documents as it set `ignore_permissions`.
 You can also ask it for things: mention @B1-T3 in a comment on a check-in and it
 re-parses that day's meals (`on_comment`). For it to show up in the @ dropdown, Frappe
 needs it enabled, a System User, and allowed in mentions, so it carries the `Bot` role:
-desk access, no doctype permissions. It has no password, so it still can't log in, and
-its mention emails are off. Created by `evolve.patches.create_bot_user`, made mentionable
-by `evolve.patches.make_bot_mentionable`.
+desk access, no doctype permissions. Its mention emails are off. Created by
+`evolve.patches.create_bot_user`, made mentionable by `evolve.patches.make_bot_mentionable`.
+
+Being enabled, it could otherwise be logged into, e.g. after a "Forgot password" email.
+It never can: `block_login` refuses every interactive login and `block_requests` every
+request made as it (API key, token, session cookie). Jobs switch to it with
+`frappe.set_user`, which is not a login, so they're unaffected.
 """
 
 from contextlib import contextmanager
 
 import frappe
+from frappe import _
 from frappe.desk.notifications import extract_mentions
 from frappe.utils import strip_html
 
@@ -31,6 +36,10 @@ BOT_ROLE = "Bot"
 
 # long reasons are cut; the full traceback is in Error Log
 MAX_REASON_LENGTH = 300
+
+#: A mention within this long of the last re-parse it queued is ignored, so repeated
+#: mentions can't run up Sarvam calls.
+REPARSE_COOLDOWN_SECONDS = 600
 
 
 @contextmanager
@@ -85,11 +94,45 @@ def on_comment(comment, method=None):
 	if comment.comment_email == BOT_USER or not mentions_bot(comment.content):
 		return
 
+	checkin = frappe.get_doc("Daily Checkin", comment.reference_name)
+
+	# commenting only needs read access, but a re-parse rewrites the meal rows. `owner` is
+	# set by the server to whoever posted the comment; `comment_email` can be sent in.
+	if not frappe.has_permission("Daily Checkin", "write", doc=checkin, user=comment.owner):
+		log(checkin, f"ignored — {comment.owner} can't edit this check-in")
+		return
+
+	cooldown_key = f"evolve:reparse_cooldown:{checkin.name}"
+	if frappe.cache.get_value(cooldown_key):
+		log(checkin, f"ignored — already re-parsed in the last {REPARSE_COOLDOWN_SECONDS} seconds")
+		return
+	frappe.cache.set_value(cooldown_key, 1, expires_in_sec=REPARSE_COOLDOWN_SECONDS)
+
 	frappe.enqueue(
 		"evolve.parsers.meals.tasks.reparse_on_request",
-		checkin=comment.reference_name,
+		checkin=checkin.name,
 		# two quick mentions run one re-parse, not two
 		job_id=f"reparse_meals::{comment.reference_name}",
 		deduplicate=True,
 		enqueue_after_commit=True,
 	)
+
+
+def block_login(login_manager):
+	"""`on_login`: refuse any interactive login as B1-T3.
+
+	Runs first in `LoginManager.post_login`, which every way in goes through: password,
+	login link, OTP, social login, impersonation, `bench browse`.
+	"""
+	if (login_manager.user or "").lower() == BOT_USER:
+		raise frappe.AuthenticationError(_("{0} is a bot account and can't log in.").format(BOT_NAME))
+
+
+def block_requests():
+	"""`auth_hooks`: refuse any request made as B1-T3.
+
+	Covers what doesn't go through a login: API keys, OAuth tokens, and a session cookie
+	that already exists. Only runs for HTTP requests, never for background jobs.
+	"""
+	if frappe.session.user == BOT_USER:
+		raise frappe.AuthenticationError(_("{0} is a bot account and can't log in.").format(BOT_NAME))
