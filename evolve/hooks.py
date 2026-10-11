@@ -4,7 +4,8 @@ app_publisher = "devdesh"
 app_description = "Lets evolve: A personal application"
 app_email = "kdevdeshpande@gmail.com"
 app_license = "mit"
-
+app_include_js=["/assets/evolve/js/controls/datetime.js"]
+app_include_css = ["/assets/evolve/css/datetime_picker.css"]
 # Send non-GET requests for this app's endpoints as native `application/json`
 # bodies instead of form-encoded, per-key JSON-stringified values.
 use_json_request_body = True
@@ -303,4 +304,3 @@ require_type_annotated_api_methods = True
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
