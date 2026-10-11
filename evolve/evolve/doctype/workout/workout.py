@@ -4,7 +4,9 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_link_to_form, getdate
+from frappe.utils import formatdate, get_link_to_form, getdate
+
+from evolve import bot
 
 
 class Workout(Document):
@@ -38,6 +40,10 @@ class Workout(Document):
 		check-in's `workout` is a single Link and a second workout on the same day has
 		nowhere to go. Uses db.set_value rather than loading and saving the check-in, so
 		importing a workout cannot fail on unrelated check-in validation.
+
+		When the workout is left unlinked, B1-T3 says why on the workout's timeline. A
+		check-in created later still picks the workout up (`DailyCheckin.attach_days_workout`),
+		so that comment records the state at import time, not now.
 		"""
 		if not self.workout_date:
 			return
@@ -49,10 +55,14 @@ class Workout(Document):
 			as_dict=True,
 		)
 		if not checkin:
+			bot.log(
+				self, f"workout not auto-linked, no check-in for {formatdate(getdate(self.workout_date))}"
+			)
 			return
 
 		if checkin.workout:
 			if checkin.workout != self.name:
+				bot.log(self, f"workout not auto-linked, {checkin.name} already has {checkin.workout}")
 				frappe.msgprint(
 					_("{0} already has {1} attached, so {2} was left unlinked.").format(
 						get_link_to_form("Daily Checkin", checkin.name),
@@ -65,8 +75,19 @@ class Workout(Document):
 			return
 
 		frappe.db.set_value("Daily Checkin", checkin.name, "workout", self.name)
+		log_link(self.name, checkin.name)
 		frappe.msgprint(
 			_("Linked to {0}.").format(get_link_to_form("Daily Checkin", checkin.name)),
 			indicator="green",
 			alert=True,
 		)
+
+
+def log_link(workout: str, checkin: str):
+	"""Record an automatic workout <-> check-in link on both timelines.
+
+	Called from whichever side made the link: `Workout.link_to_daily_checkin` or
+	`DailyCheckin.attach_days_workout`.
+	"""
+	bot.log(frappe.get_doc("Workout", workout), f"linked to {checkin}")
+	bot.log(frappe.get_doc("Daily Checkin", checkin), f"attached workout {workout}")

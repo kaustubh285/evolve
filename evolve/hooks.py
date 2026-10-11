@@ -193,6 +193,13 @@ use_json_request_body = True
 # Scheduled Tasks
 # ---------------
 
+scheduler_events = {
+	"cron": {
+		# 23:55 in the System Settings timezone, so the day's check-in is parsed the same night
+		"55 23 * * *": ["evolve.parsers.meals.tasks.parse_unparsed_meals"],
+	},
+}
+
 # scheduler_events = {
 # 	"all": [
 # 		"evolve.tasks.all"

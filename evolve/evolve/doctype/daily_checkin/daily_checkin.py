@@ -7,6 +7,8 @@ from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 from frappe.utils import flt, formatdate, get_datetime, get_link_to_form, getdate
 
+from evolve.evolve.doctype.workout.workout import log_link
+
 
 class DailyCheckin(Document):
 	# begin: auto-generated types
@@ -15,13 +17,13 @@ class DailyCheckin(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from evolve.evolve.doctype.daily_checkin_health_event.daily_checkin_health_event import (
-			DailyCheckinHealthEvent,
-		)
+		from evolve.evolve.doctype.daily_checkin_health_event.daily_checkin_health_event import DailyCheckinHealthEvent
+		from evolve.evolve.doctype.daily_checkin_meal.daily_checkin_meal import DailyCheckinMeal
 		from frappe.types import DF
 
 		date: DF.Date
 		health_events: DF.TableMultiSelect[DailyCheckinHealthEvent]
+		meal_entries: DF.Table[DailyCheckinMeal]
 		meals: DF.Text | None
 		notes: DF.SmallText | None
 		protein_at_breakfast: DF.Check
@@ -57,6 +59,12 @@ class DailyCheckin(Document):
 		self.set_total_hours()
 		self.attach_days_workout()
 
+	def on_update(self):
+		# logged here, not in validate: a new check-in doesn't exist yet during validate
+		if self.flags.auto_linked_workout:
+			log_link(self.flags.auto_linked_workout, self.name)
+			self.flags.auto_linked_workout = None
+
 	def attach_days_workout(self):
 		"""Pick up a workout already recorded for this date.
 
@@ -72,6 +80,8 @@ class DailyCheckin(Document):
 			"name",
 			order_by="workout_date asc",
 		)
+		# commented on in on_update, once the save has gone through
+		self.flags.auto_linked_workout = self.workout
 
 	def ensure_one_per_day(self):
 		"""Enforce one check-in per calendar day.

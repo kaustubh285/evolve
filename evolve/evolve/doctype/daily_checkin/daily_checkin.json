@@ -2,7 +2,7 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "creation": "2026-10-03 00:00:00.000000",
+ "creation": "2026-10-03 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -19,6 +19,8 @@
   "protein_at_breakfast",
   "protein_at_lunch",
   "protein_at_dinner",
+  "auto_section",
+  "meal_entries",
   "movement_section",
   "steps",
   "records_section",
@@ -155,12 +157,24 @@
    "fieldtype": "Table MultiSelect",
    "label": "Health Events",
    "options": "Daily Checkin Health Event"
+  },
+  {
+   "fieldname": "auto_section",
+   "fieldtype": "Section Break",
+   "label": "(auto)",
+   "options": "Daily Checkin Meal"
+  },
+  {
+   "fieldname": "meal_entries",
+   "fieldtype": "Table",
+   "label": "meal_entries",
+   "options": "Daily Checkin Meal"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-03 00:00:00.000000",
+ "modified": "2026-10-11 15:00:22.360661",
  "modified_by": "Administrator",
  "module": "Evolve",
  "name": "Daily Checkin",
