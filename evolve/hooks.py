@@ -182,6 +182,13 @@ use_json_request_body = True
 # ---------------
 # Hook on document methods and events
 
+doc_events = {
+	"Comment": {
+		# @B1-T3 in a comment asks it to do something, see evolve.bot.on_comment
+		"after_insert": "evolve.bot.on_comment",
+	},
+}
+
 # doc_events = {
 # 	"*": {
 # 		"on_update": "method",

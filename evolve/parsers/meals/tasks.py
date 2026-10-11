@@ -8,8 +8,9 @@ success or failure. A check-in counts as unparsed while it has `meals` text and 
 `meal_entries` rows, so a failed one is simply picked up again the next night, until it
 falls out of the lookback window.
 
-Rows are only ever added to an empty table. If `meals` is edited after parsing, the
-rows are not refreshed.
+The nightly job only fills an empty table, so editing `meals` after parsing doesn't
+refresh the rows on its own. Mentioning @B1-T3 in a comment on the check-in does: see
+`reparse_on_request`, which replaces every row.
 """
 
 import frappe
@@ -69,8 +70,22 @@ def checkins_to_parse(lookback_days: int = LOOKBACK_DAYS) -> list[str]:
 	return [name for name in candidates if name not in parsed]
 
 
-def parse_checkin_meals(name: str) -> bool:
+def reparse_on_request(checkin: str):
+	"""Background job for an @B1-T3 mention on a check-in (see `evolve.bot.on_comment`).
+
+	Deletes every meal row, manual ones included, and parses `meals` again. No lookback
+	window: the check-in was asked for by name.
+	"""
+	with bot.acting_as_bot():
+		parse_checkin_meals(checkin, replace=True)
+		frappe.db.commit()
+
+
+def parse_checkin_meals(name: str, replace: bool = False) -> bool:
 	"""Parse one check-in's meals and save the rows. Never raises.
+
+	With `replace`, existing rows are deleted first. That happens only once the new
+	parse has succeeded, so a failed re-parse leaves the old rows in place.
 
 	Success or failure, a comment is left on the check-in. Failures also go to Error Log
 	with the full traceback.
@@ -81,6 +96,8 @@ def parse_checkin_meals(name: str) -> bool:
 
 	try:
 		rows = parse_meals(doc.meals, doc.date)
+		if replace:
+			doc.set("meal_entries", [])
 		for row in rows:
 			doc.append("meal_entries", {**row, "source": "Parsed"})
 		# B1-T3 has no roles; it's trusted to write only what this job writes
@@ -98,5 +115,6 @@ def parse_checkin_meals(name: str) -> bool:
 		return False
 
 	meals = ", ".join(row["meal"] for row in rows)
-	bot.log(doc, f"parsed {len(rows)} {'meal' if len(rows) == 1 else 'meals'} — {meals}")
+	verb = "re-parsed on request:" if replace else "parsed"
+	bot.log(doc, f"{verb} {len(rows)} {'meal' if len(rows) == 1 else 'meals'} — {meals}")
 	return True

@@ -6,6 +6,7 @@
 # Patches added in this section will be executed after doctypes are migrated
 evolve.patches.rename_daily_checkins_by_date
 evolve.patches.create_bot_user
+evolve.patches.make_bot_mentionable
 
 [post_fixture_sync]
 # Patches added in this section will be executed after fixtures and customizations
