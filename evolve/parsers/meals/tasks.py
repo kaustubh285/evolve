@@ -20,7 +20,7 @@ from evolve.parsers.meals.parser import parse_meals
 
 #: How far back to look for unparsed check-ins. This also caps retries: text the model
 #: can never parse gets at most this many nightly failure comments, not one forever.
-LOOKBACK_DAYS = 30
+LOOKBACK_DAYS = 10
 
 
 def parse_unparsed_meals(lookback_days: int = LOOKBACK_DAYS) -> dict:

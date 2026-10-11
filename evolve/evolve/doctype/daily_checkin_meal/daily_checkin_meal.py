@@ -14,6 +14,11 @@ class DailyCheckinMeal(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		has_caffeine: DF.Check
+		has_fibre: DF.Check
+		has_protein: DF.Check
+		is_fried: DF.Check
+		is_spicy: DF.Check
 		item: DF.SmallText | None
 		meal: DF.Literal["Pre-Breakfast", "Breakfast", "Brunch", "Lunch", "Afternoon Snack", "Dinner"]
 		parent: DF.Data
