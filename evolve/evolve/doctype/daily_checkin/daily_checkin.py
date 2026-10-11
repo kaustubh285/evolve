@@ -7,7 +7,8 @@ from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 from frappe.utils import flt, formatdate, get_datetime, get_link_to_form, getdate
 
-from evolve.evolve.doctype.workout.workout import log_link
+from evolve.evolve.doctype.health_event.health_event import log_health_event_link
+from evolve.evolve.doctype.workout.workout import log_workout_link
 
 
 class DailyCheckin(Document):
@@ -58,12 +59,17 @@ class DailyCheckin(Document):
 		self.ensure_one_per_day()
 		self.set_total_hours()
 		self.attach_days_workout()
+		self.attach_days_health_events()
 
 	def on_update(self):
 		# logged here, not in validate: a new check-in doesn't exist yet during validate
 		if self.flags.auto_linked_workout:
-			log_link(self.flags.auto_linked_workout, self.name)
+			log_workout_link(self.flags.auto_linked_workout, self.name)
 			self.flags.auto_linked_workout = None
+
+		for health_event in self.flags.auto_linked_health_events or []:
+			log_health_event_link(health_event, self.name)
+		self.flags.auto_linked_health_events = None
 
 	def attach_days_workout(self):
 		"""Pick up a workout already recorded for this date.
@@ -82,6 +88,29 @@ class DailyCheckin(Document):
 		)
 		# commented on in on_update, once the save has gone through
 		self.flags.auto_linked_workout = self.workout
+
+	def attach_days_health_events(self):
+		"""Pick up health events that started on this date, when the check-in is created.
+
+		Only for a new check-in. After that, `HealthEvent.after_insert` adds events as
+		they're logged, and an event you take out of the table stays out instead of being
+		re-added on the next save.
+		"""
+		if not self.is_new() or not self.date:
+			return
+
+		already = {row.health_event for row in self.health_events}
+		found = frappe.get_all(
+			"Health Event",
+			filters={"when_started": ["between", [f"{self.date} 00:00:00", f"{self.date} 23:59:59"]]},
+			pluck="name",
+			order_by="when_started asc",
+		)
+		added = [name for name in found if name not in already]
+		for name in added:
+			self.append("health_events", {"health_event": name})
+		# commented on in on_update, once the save has gone through
+		self.flags.auto_linked_health_events = added
 
 	def ensure_one_per_day(self):
 		"""Enforce one check-in per calendar day.

@@ -75,7 +75,7 @@ class Workout(Document):
 			return
 
 		frappe.db.set_value("Daily Checkin", checkin.name, "workout", self.name)
-		log_link(self.name, checkin.name)
+		log_workout_link(self.name, checkin.name)
 		frappe.msgprint(
 			_("Linked to {0}.").format(get_link_to_form("Daily Checkin", checkin.name)),
 			indicator="green",
@@ -83,7 +83,7 @@ class Workout(Document):
 		)
 
 
-def log_link(workout: str, checkin: str):
+def log_workout_link(workout: str, checkin: str):
 	"""Record an automatic workout <-> check-in link on both timelines.
 
 	Called from whichever side made the link: `Workout.link_to_daily_checkin` or
